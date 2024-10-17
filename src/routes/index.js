@@ -10,5 +10,6 @@ router.get("/", (req, res) => {
 
 router.use("/categories", categoriesRouter);
 router.use("/products", productsRouter);
+router.use("/carts", cartsRouter);
 
 export default router;

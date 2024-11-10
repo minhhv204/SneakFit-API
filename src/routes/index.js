@@ -3,6 +3,7 @@ import categoriesRouter from "./categories.js";
 import productsRouter from "./products.js";
 import cartsRouter from "./carts.js";
 import authRouter from "./auth.js";
+import articlesRouter from "./article.js";
 
 const router = Router();
 

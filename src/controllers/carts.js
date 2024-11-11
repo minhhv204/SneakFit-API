@@ -49,65 +49,76 @@ class CartsController {
   // POST /carts
   async createCart(req, res, next) {
     try {
-      const { quantity, user, product } = req.body;
+      const { quantity, user, product, size } = req.body;
       const cart = await Cart.findOne({ user });
-      if (cart)
-        throw new ApiError(404, "Cart Existed, You can only Update Cart");
+      if (cart) throw new ApiError(404, "Cart Existed, You can only Update Cart");
+  
       const newCart = await Cart.create({
         user,
         products: [
           {
             product,
             quantity,
+            size, // Đảm bảo size được thêm vào sản phẩm
           },
         ],
       });
       res.status(StatusCodes.CREATED).json({
-        message: "Add Cart Successfull",
+        message: "Add Cart Successfully",
         data: newCart,
       });
     } catch (error) {
       next(error);
     }
   }
-
+  
   async updateCart(req, res, next) {
     try {
-      const { quantity, user, product } = req.body;
+      const { quantity, user, product, size } = req.body;
+      console.log('Received Data:', { quantity, user, product, size });
+  
       const cart = await Cart.findOne({ user });
       if (!cart) throw new ApiError(404, "Cart Not Found");
-
+  
+      // Kiểm tra nếu sản phẩm đã tồn tại trong giỏ hàng với cùng size
       const productExisted = cart.products.find(
-        (item) => item.product == product._id
+        (item) => item.product.toString() === product._id.toString() && item.size === size
       );
-      let newProductCart = [];
+      console.log('Product Existed:', productExisted);
+  
+      let updateCartData;
       if (productExisted) {
-        newProductCart = cart.products.map((item) =>
-          item.product == product._id
-            ? { product, quantity: item.quantity + quantity }
-            : item
+        // Cập nhật số lượng sản phẩm nếu đã tồn tại, sử dụng $inc
+        updateCartData = await Cart.findOneAndUpdate(
+          { user, "products.product": product._id, "products.size": size },
+          {
+            $inc: { "products.$.quantity": quantity },  // Tăng số lượng
+          },
+          { new: true }
         );
       } else {
-        newProductCart = [...cart.products, { product, quantity }];
+        // Thêm sản phẩm mới vào giỏ hàng nếu chưa có
+        updateCartData = await Cart.findByIdAndUpdate(
+          req.params.id,
+          {
+            $push: { products: { product, quantity, size } },
+          },
+          { new: true }
+        );
       }
-
-      const updateCart = await Cart.findByIdAndUpdate(
-        req.params.id,
-        { products: newProductCart },
-        {
-          new: true,
-        }
-      );
-      if (!updateCart) throw new ApiError(404, "Cart Not Found");
-
+  
+      if (!updateCartData) throw new ApiError(404, "Cart Not Found");
+  
       res.status(StatusCodes.OK).json({
         message: "Update Cart Successfull",
-        data: updateCart,
+        data: updateCartData,
       });
     } catch (error) {
       next(error);
     }
   }
+  
+  
   async deleteProductCart(req, res, next) {
     try {
       const { userId, id } = req.params;

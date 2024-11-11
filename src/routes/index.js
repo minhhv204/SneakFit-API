@@ -4,6 +4,7 @@ import productsRouter from "./products.js";
 import cartsRouter from "./carts.js";
 import authRouter from "./auth.js";
 import articlesRouter from "./article.js";
+import sizeRouter from "./size.js";
 import ordersRouter from "./orders.js";
 const router = Router();
 
@@ -15,7 +16,9 @@ router.use("/categories", categoriesRouter);
 router.use("/products", productsRouter);
 router.use("/carts", cartsRouter);
 router.use("/articles", articlesRouter);
+router.use("/sizes", sizeRouter);
 router.use("/orders", ordersRouter);
+
 
 
 export default router;

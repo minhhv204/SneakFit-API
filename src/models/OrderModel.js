@@ -11,6 +11,10 @@ const OrderSchema = new Schema(
       type: String,
       required: true,
     },
+    status: {
+      type: String,
+      default: 'Pending',
+    },
     phone: {
       type: String,
       required: true,
@@ -36,6 +40,10 @@ const OrderSchema = new Schema(
         },
         quantity: {
           type: Number,
+          required: true,
+        },
+        size: {
+          type: Number, // Thêm thuộc tính size vào sản phẩm
           required: true,
         },
       },

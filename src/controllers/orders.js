@@ -23,10 +23,13 @@ class OrdersController {
   // GET /orders/:id
   async getOrderDetail(req, res, next) {
     try {
-      const order = await Order.findById(req.params.id);
-
+      const order = await Order.findById(req.params.id).populate("products.product");
       if (!order) throw new ApiError(404, "Order Not Found");
-      res.status(StatusCodes.OK).json(order);
+      
+      res.status(200).json({
+        message: "Order retrieved successfully",
+        data: order,
+      });
     } catch (error) {
       next(error);
     }
@@ -34,7 +37,7 @@ class OrdersController {
 
   async getOrderUser(req, res, next) {
     try {
-      const order = await Order.findOne({user: req.params.id}).populate({
+      const order = await Order.find({user: req.params.id}).populate({
         path: "products",
         populate: {
           path: "product",
@@ -50,18 +53,31 @@ class OrdersController {
   }
   // POST /orders
   async createOrder(req, res, next) {
+    console.log(122);
+    
     try {
+      console.log("User ID from request:", req.body.user);
+      const cart = await Cart.findOne({ user: req.body.user });
+      if (!cart) {
+        
+        throw new ApiError(404, "Cart Not Found");
+      }
+  
+      // Sau khi đảm bảo `Cart` tồn tại, tiến hành tạo `Order`
       const newOrder = await Order.create(req.body);
-      const cart = await Cart.findOneAndDelete({ user: req.body.user });
-      if (!cart) throw new ApiError(404, "Cart Not Found");
+  
+      // Xóa `Cart` sau khi đã tạo `Order`
+      await Cart.findOneAndDelete({ user: req.body.user });
+  
       res.status(StatusCodes.CREATED).json({
-        message: "Create Order Successfull",
+        message: "Create Order Successful",
         data: newOrder,
       });
     } catch (error) {
       next(error);
     }
   }
+  
   // PUT /orders/:id
   async updateOrder(req, res, next) {
     try {

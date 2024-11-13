@@ -6,7 +6,9 @@ import authRouter from "./auth.js";
 import articlesRouter from "./article.js";
 import sizeRouter from "./size.js";
 import ordersRouter from "./orders.js";
+
 import userRouter from "./user.js";
+
 const router = Router();
 
 router.get("/", (req, res) => {
@@ -20,7 +22,5 @@ router.use("/articles", articlesRouter);
 router.use("/sizes", sizeRouter);
 router.use("/orders", ordersRouter);
 router.use("/users",userRouter);
-
-
 
 export default router;

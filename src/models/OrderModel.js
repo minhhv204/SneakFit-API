@@ -22,6 +22,7 @@ const OrderSchema = new Schema(
     },
     status: {
       type: String,
+      enum: ['Pending', 'Shipped', 'Delivered'],
       default: 'Pending',
     },
     phone: {

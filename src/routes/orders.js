@@ -11,5 +11,6 @@ ordersRouter.get("/user/:id", ordersController.getOrderUser);
 ordersRouter.post("/", ordersController.createOrder);
 ordersRouter.put("/:id", ordersController.updateOrder);
 ordersRouter.delete("/:id", ordersController.deleteOrder);
+ordersRouter.put("/:id", ordersController.updateOrderStatus);
 
 export default ordersRouter;

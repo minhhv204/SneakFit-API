@@ -1,8 +1,17 @@
 import mongoose from "mongoose";
+import { nanoid } from 'nanoid';
+
 const Schema = mongoose.Schema;
 
 const OrderSchema = new Schema(
   {
+    invoiceId: {
+      type: String,
+      default: function () {
+        return nanoid(10);
+      },
+      required: true,
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
